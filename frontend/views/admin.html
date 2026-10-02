@@ -1,0 +1,28 @@
+<h4>Admin Dashboard</h4>
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link" ng-class="{active: vm.role=='faculty'}" href ng-click="vm.setRole('faculty')">Faculties</a></li>
+  <li class="nav-item"><a class="nav-link" ng-class="{active: vm.role=='student'}" href ng-click="vm.setRole('student')">Students</a></li>
+</ul>
+
+<form class="row g-2 mb-3" ng-submit="vm.save()">
+  <div class="col"><input class="form-control" placeholder="Name" ng-model="vm.form.name" required></div>
+  <div class="col"><input class="form-control" type="email" placeholder="Email" ng-model="vm.form.email" required></div>
+  <div class="col"><input class="form-control" type="password"
+       placeholder="{{vm.form.id ? 'New password (optional)' : 'Password'}}"
+       ng-model="vm.form.password" ng-required="!vm.form.id"></div>
+  <div class="col-auto">
+    <button class="btn btn-primary">{{vm.form.id ? 'Update' : 'Add'}} {{vm.role}}</button>
+    <button type="button" class="btn btn-secondary" ng-if="vm.form.id" ng-click="vm.reset()">Cancel</button>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <tr><th>ID</th><th>Name</th><th>Email</th><th>Actions</th></tr>
+  <tr ng-repeat="u in vm.users">
+    <td>{{u.id}}</td><td>{{u.name}}</td><td>{{u.email}}</td>
+    <td>
+      <button class="btn btn-sm btn-warning" ng-click="vm.edit(u)">Edit</button>
+      <button class="btn btn-sm btn-danger" ng-click="vm.remove(u)">Delete</button>
+    </td>
+  </tr>
+</table>

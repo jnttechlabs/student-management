@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html ng-app="studentApp">
+<head>
+  <meta charset="utf-8">
+  <title>Student Management</title>
+  <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/angular-route/angular-route.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/controllers.js"></script>
+</head>
+<body ng-controller="NavCtrl as nav">
+  <nav class="navbar navbar-dark bg-dark px-3">
+    <span class="navbar-brand">Student Management</span>
+    <div ng-if="nav.auth.isLoggedIn()" class="text-white">
+      {{nav.auth.user().name}} ({{nav.auth.user().role}})
+      <button class="btn btn-sm btn-outline-light ms-3" ng-click="nav.logout()">Logout</button>
+    </div>
+  </nav>
+  <div class="container mt-4" ng-view></div>
+</body>
+</html>

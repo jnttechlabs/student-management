@@ -1,0 +1,15 @@
+<div class="card mx-auto" style="max-width:400px"><div class="card-body">
+  <h4>Register</h4>
+  <form ng-submit="vm.register()">
+    <input class="form-control mb-2" placeholder="Full name" ng-model="vm.form.name" required>
+    <input class="form-control mb-2" type="email" placeholder="Email" ng-model="vm.form.email" required>
+    <input class="form-control mb-2" type="password" placeholder="Password" ng-model="vm.form.password" ng-minlength="6" required>
+    <select class="form-select mb-2" ng-model="vm.form.role">
+      <option value="student">Student</option>
+      <option value="faculty">Faculty</option>
+    </select>
+    <div class="text-danger mb-2" ng-if="vm.error">{{vm.error}}</div>
+    <button class="btn btn-success w-100">Register</button>
+  </form>
+  <a href="#!/login" class="d-block mt-2">Back to login</a>
+</div></div>

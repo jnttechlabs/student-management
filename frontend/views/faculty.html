@@ -1,0 +1,189 @@
+<h4>Faculty Dashboard</h4>
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link" ng-class="{active: vm.tab=='students'}" href ng-click="vm.tab='students'">Students</a></li>
+  <li class="nav-item"><a class="nav-link" ng-class="{active: vm.tab=='classes'}" href ng-click="vm.tab='classes'">Classes</a></li>
+</ul>
+
+<!-- ================= STUDENTS TAB ================= -->
+<div ng-if="vm.tab=='students'">
+  <form class="row g-2 mb-3" ng-submit="vm.saveStudent()">
+    <div class="col"><input class="form-control" placeholder="Name" ng-model="vm.sForm.name" required></div>
+    <div class="col"><input class="form-control" type="email" placeholder="Email" ng-model="vm.sForm.email" required></div>
+    <div class="col" ng-if="!vm.sForm.id"><input class="form-control" type="password" placeholder="Password" ng-model="vm.sForm.password" required></div>
+    <div class="col-auto">
+      <button class="btn btn-primary">{{vm.sForm.id ? 'Update' : 'Register'}} Student</button>
+      <button type="button" class="btn btn-secondary" ng-if="vm.sForm.id" ng-click="vm.sForm={}">Cancel</button>
+    </div>
+  </form>
+  <table class="table table-striped">
+    <tr><th>ID</th><th>Name</th><th>Email</th><th></th></tr>
+    <tr ng-repeat="s in vm.students">
+      <td>{{s.id}}</td><td>{{s.name}}</td><td>{{s.email}}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" ng-click="vm.editStudent(s)">Edit</button>
+        <button class="btn btn-sm btn-danger" ng-click="vm.removeStudent(s)">Delete</button>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ================= CLASSES TAB ================= -->
+<div ng-if="vm.tab=='classes'">
+  <form class="row g-2 mb-3" ng-submit="vm.saveClass()">
+    <div class="col"><input class="form-control" placeholder="Class name" ng-model="vm.cForm.name" required></div>
+    <div class="col"><input class="form-control" placeholder="Description" ng-model="vm.cForm.description"></div>
+    <div class="col-auto">
+      <button class="btn btn-primary">{{vm.cForm.id ? 'Update' : 'Create'}} Class</button>
+      <button type="button" class="btn btn-secondary" ng-if="vm.cForm.id" ng-click="vm.cForm={}">Cancel</button>
+    </div>
+  </form>
+
+  <table class="table table-striped">
+    <tr><th>Name</th><th>Description</th><th>Students</th><th></th></tr>
+    <tr ng-repeat="c in vm.classes" ng-class="{'table-info': vm.selectedClass.id==c.id}">
+      <td>{{c.name}}</td><td>{{c.description}}</td><td>{{c.student_count}}</td>
+      <td>
+        <button class="btn btn-sm btn-info" ng-click="vm.openClass(c)">Open</button>
+        <button class="btn btn-sm btn-warning" ng-click="vm.editClass(c)">Edit</button>
+        <button class="btn btn-sm btn-danger" ng-click="vm.removeClass(c)">Delete</button>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ---------- CLASS WORKSPACE ---------- -->
+  <div class="card" ng-if="vm.selectedClass"><div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h5>Class: {{vm.selectedClass.name}}</h5>
+      <button class="btn btn-sm btn-outline-secondary" ng-click="vm.selectedClass=null">Close</button>
+    </div>
+    <ul class="nav nav-pills my-3">
+      <li class="nav-item"><a class="nav-link" ng-class="{active: vm.ctab=='roster'}" href ng-click="vm.setCTab('roster')">Students</a></li>
+      <li class="nav-item"><a class="nav-link" ng-class="{active: vm.ctab=='assessments'}" href ng-click="vm.setCTab('assessments')">Assessments</a></li>
+      <li class="nav-item"><a class="nav-link" ng-class="{active: vm.ctab=='attendance'}" href ng-click="vm.setCTab('attendance')">Attendance</a></li>
+      <li class="nav-item"><a class="nav-link" ng-class="{active: vm.ctab=='marks'}" href ng-click="vm.setCTab('marks')">Marks &amp; Results</a></li>
+    </ul>
+
+    <!-- ===== ROSTER ===== -->
+    <div ng-if="vm.ctab=='roster'">
+      <p class="text-muted">Students enroll themselves from their own dashboard. You can remove a student from this class.</p>
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between" ng-repeat="s in vm.enrolled">
+          {{s.name}} ({{s.email}})
+          <button class="btn btn-sm btn-outline-danger" ng-click="vm.removeFromClass(s)">Remove</button>
+        </li>
+        <li class="list-group-item text-muted" ng-if="!vm.enrolled.length">No students have enrolled yet.</li>
+      </ul>
+    </div>
+
+    <!-- ===== ASSESSMENTS ===== -->
+    <div ng-if="vm.ctab=='assessments'">
+      <form class="row g-2 mb-3" ng-submit="vm.saveAssessment()">
+        <div class="col-md-3"><input class="form-control" placeholder="Title" ng-model="vm.aForm.title" required></div>
+        <div class="col-md-3"><input class="form-control" placeholder="Question / description" ng-model="vm.aForm.description"></div>
+        <div class="col-md-2"><input class="form-control" type="date" ng-model="vm.aForm.due_date"></div>
+        <div class="col-md-1"><input class="form-control" type="number" min="1" placeholder="Max" ng-model="vm.aForm.max_marks" required></div>
+        <div class="col-auto">
+          <button class="btn btn-primary">{{vm.aForm.id ? 'Update' : 'Create'}}</button>
+          <button type="button" class="btn btn-secondary" ng-if="vm.aForm.id" ng-click="vm.aForm={max_marks:100}">Cancel</button>
+        </div>
+      </form>
+
+      <table class="table table-striped">
+        <tr><th>Title</th><th>Due</th><th>Max</th><th>Submitted</th><th>Graded</th><th></th></tr>
+        <tr ng-repeat="a in vm.assessments">
+          <td>{{a.title}}</td>
+          <td>{{a.due_date ? (a.due_date | date:'dd-MMM-yyyy') : '-'}}</td>
+          <td>{{a.max_marks}}</td>
+          <td>{{a.submitted}} / {{vm.enrolled.length || vm.selectedClass.student_count}}</td>
+          <td>{{a.graded}}</td>
+          <td>
+            <button class="btn btn-sm btn-info" ng-click="vm.openSubmissions(a)">Answers &amp; Grading</button>
+            <button class="btn btn-sm btn-warning" ng-click="vm.editAssessment(a)">Edit</button>
+            <button class="btn btn-sm btn-danger" ng-click="vm.removeAssessment(a)">Delete</button>
+          </td>
+        </tr>
+        <tr ng-if="!vm.assessments.length"><td colspan="6" class="text-muted">No assessments yet.</td></tr>
+      </table>
+
+      <div class="card" ng-if="vm.selectedAssessment"><div class="card-body">
+        <h6>Answers for: {{vm.selectedAssessment.title}} (max {{vm.selectedAssessment.max_marks}})</h6>
+        <table class="table table-sm align-middle">
+          <tr><th>Student</th><th>Answer</th><th style="width:90px">Score</th><th>Feedback</th><th></th></tr>
+          <tr ng-repeat="s in vm.subs">
+            <td>{{s.name}}</td>
+            <td style="white-space:pre-wrap">
+              <span ng-if="s.submission_id">{{s.answer}}</span>
+              <span class="text-muted" ng-if="!s.submission_id">Not submitted</span>
+            </td>
+            <td><input ng-if="s.submission_id" class="form-control form-control-sm" type="number" min="0"
+                       max="{{vm.selectedAssessment.max_marks}}" ng-model="s.score" ng-change="s.saved=false"></td>
+            <td><input ng-if="s.submission_id" class="form-control form-control-sm" placeholder="Feedback"
+                       ng-model="s.feedback" ng-change="s.saved=false"></td>
+            <td>
+              <button ng-if="s.submission_id" class="btn btn-sm btn-success" ng-click="vm.gradeSub(s)">Save grade</button>
+              <span class="text-success" ng-if="s.saved">Saved</span>
+            </td>
+          </tr>
+          <tr ng-if="!vm.subs.length"><td colspan="5" class="text-muted">No students enrolled yet.</td></tr>
+        </table>
+      </div></div>
+    </div>
+
+    <!-- ===== ATTENDANCE ===== -->
+    <div ng-if="vm.ctab=='attendance'">
+      <div class="row g-2 mb-3 align-items-center">
+        <div class="col-auto"><label class="col-form-label">Date</label></div>
+        <div class="col-auto"><input class="form-control" type="date" ng-model="vm.attDate" ng-change="vm.loadAttendance()"></div>
+        <div class="col-auto">
+          <button class="btn btn-sm btn-outline-success" ng-click="vm.markAll('present')">All present</button>
+          <button class="btn btn-sm btn-outline-danger" ng-click="vm.markAll('absent')">All absent</button>
+        </div>
+      </div>
+      <table class="table table-striped" style="max-width:520px">
+        <tr><th>Student</th><th>Status</th></tr>
+        <tr ng-repeat="r in vm.att">
+          <td>{{r.name}}</td>
+          <td>
+            <select class="form-select form-select-sm" ng-model="r.status">
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+            </select>
+          </td>
+        </tr>
+        <tr ng-if="!vm.att.length"><td colspan="2" class="text-muted">No students enrolled yet.</td></tr>
+      </table>
+      <button class="btn btn-primary" ng-click="vm.saveAttendance()" ng-disabled="!vm.att.length">Save attendance</button>
+    </div>
+
+    <!-- ===== MARKS & RESULTS ===== -->
+    <div ng-if="vm.ctab=='marks'">
+      <h6>Upload marks</h6>
+      <div class="row g-2 mb-3">
+        <div class="col-md-4"><input class="form-control" placeholder="Exam name (e.g. Mid Term)" ng-model="vm.mForm.exam_name"></div>
+        <div class="col-md-2"><input class="form-control" type="number" min="1" placeholder="Max marks" ng-model="vm.mForm.max_marks"></div>
+      </div>
+      <table class="table table-striped" style="max-width:520px">
+        <tr><th>Student</th><th>Marks obtained</th></tr>
+        <tr ng-repeat="g in vm.grid">
+          <td>{{g.name}}</td>
+          <td><input class="form-control form-control-sm" type="number" min="0" max="{{vm.mForm.max_marks}}" ng-model="g.marks"></td>
+        </tr>
+        <tr ng-if="!vm.grid.length"><td colspan="2" class="text-muted">No students enrolled yet.</td></tr>
+      </table>
+      <button class="btn btn-primary mb-4" ng-click="vm.saveMarks()" ng-disabled="!vm.grid.length">Save results</button>
+      <p class="text-muted small">Saving the same exam name again updates the marks. Grades are calculated automatically: 90%+ A+, 80% A, 70% B, 60% C, 50% D, below 50% F.</p>
+
+      <h6>Published results</h6>
+      <table class="table table-striped">
+        <tr><th>Exam</th><th>Student</th><th>Marks</th><th>Grade</th><th></th></tr>
+        <tr ng-repeat="m in vm.marks">
+          <td>{{m.exam_name}}</td><td>{{m.student_name}}</td>
+          <td>{{m.marks_obtained}} / {{m.max_marks}}</td>
+          <td><span class="badge bg-primary">{{m.grade}}</span></td>
+          <td><button class="btn btn-sm btn-outline-danger" ng-click="vm.removeMark(m)">Delete</button></td>
+        </tr>
+        <tr ng-if="!vm.marks.length"><td colspan="5" class="text-muted">No results uploaded yet.</td></tr>
+      </table>
+    </div>
+  </div></div>
+</div>
